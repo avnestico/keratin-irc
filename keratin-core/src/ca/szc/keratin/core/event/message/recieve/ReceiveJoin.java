@@ -6,6 +6,7 @@
  */
 package ca.szc.keratin.core.event.message.recieve;
 
+import ca.szc.keratin.core.event.message.interfaces.ChannelReplyable;
 import org.pmw.tinylog.Logger;
 
 import ca.szc.keratin.core.event.message.MessageReceive;
@@ -18,7 +19,7 @@ import ca.szc.keratin.core.net.message.IrcMessage;
 
 public class ReceiveJoin
     extends MessageReceive
-    implements Replyable, DirectlyReplyable, PrivatelyReplyable
+    implements Replyable, DirectlyReplyable, PrivatelyReplyable, ChannelReplyable
 {
     public static final String COMMAND = "JOIN";
 
@@ -69,6 +70,19 @@ public class ReceiveJoin
         try
         {
             getReplyQueue().privmsg( joiner, reply );
+        }
+        catch ( InvalidMessageParamException e )
+        {
+            Logger.error( e, "Error creating reply message" );
+        }
+    }
+
+    @Override
+    public void replyChannel( String newchannel, String reply)
+    {
+        try
+        {
+            getReplyQueue().privmsg( newchannel, reply );
         }
         catch ( InvalidMessageParamException e )
         {

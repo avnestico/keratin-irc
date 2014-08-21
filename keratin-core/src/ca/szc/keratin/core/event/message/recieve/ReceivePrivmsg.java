@@ -6,6 +6,7 @@
  */
 package ca.szc.keratin.core.event.message.recieve;
 
+import ca.szc.keratin.core.event.message.interfaces.ChannelReplyable;
 import org.pmw.tinylog.Logger;
 
 import ca.szc.keratin.core.event.message.MessageReceive;
@@ -19,7 +20,7 @@ import ca.szc.keratin.core.net.message.IrcMessage;
 
 public class ReceivePrivmsg
     extends MessageReceive
-    implements Replyable, DirectlyReplyable, PrivatelyReplyable
+    implements Replyable, DirectlyReplyable, PrivatelyReplyable, ChannelReplyable
 {
     public static final String COMMAND = "PRIVMSG";
 
@@ -83,6 +84,20 @@ public class ReceivePrivmsg
         {
             for ( String line : LineWrap.wrap( reply ) )
                 getReplyQueue().privmsg( sender, line );
+        }
+        catch ( InvalidMessageParamException e )
+        {
+            Logger.error( e, "Error creating reply message" );
+        }
+    }
+
+    @Override
+    public void replyChannel( String newchannel, String reply)
+    {
+        try
+        {
+            for ( String line : LineWrap.wrap( reply ) )
+                getReplyQueue().privmsg( newchannel, line );
         }
         catch ( InvalidMessageParamException e )
         {
